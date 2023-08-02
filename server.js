@@ -21,6 +21,7 @@ function promptMenu(){
             'View all departments', 
             'View all positions', 
             'View all employees',  
+            'View managers',
             'Update employee position',
             'Add department',
             'Add position',
@@ -31,6 +32,8 @@ function promptMenu(){
         const choices = answers.choice;
         if (choices === 'View all departments'){
             viewAllDep();
+        }if (choices === 'View managers'){
+            viewManagers();
         }if (choices === 'View all positions'){
             viewAllPositions();
         }if (choices === 'View all employees'){
@@ -47,6 +50,7 @@ function promptMenu(){
     });
 };
 
+
 function viewAllDep(){
     let sql = "SELECT * FROM departments";
     db.query(sql, (err, res)=>{
@@ -57,6 +61,15 @@ function viewAllDep(){
     })
 };
 
+function viewManagers(){
+    let sql = "SELECT * FROM managers";
+    db.query(sql, (err, res)=>{
+        if (err) throw err;
+        console.log('Managers:')
+        console.table(res);
+        return promptMenu();
+    })
+};
 function viewAllPositions (){
     const sql = "SELECT position_id, title, salary, department_name AS department FROM positions LEFT JOIN departments ON positions.department_id = departments.department_id"; 
     db.query(sql, (err, res) =>{
@@ -69,7 +82,7 @@ function viewAllPositions (){
 };
 
 function viewAllEmployees (){
-    const sql = "SELECT employees.employee_id, employees.first_name, employees.last_name, positions.title AS title, CONCAT (manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN positions ON employees.position_id = positions.position_id LEFT JOIN employees manager ON employees.manager_id = employees.manager_id"; 
+    const sql = "SELECT employees.employee_id, employees.first_name, employees.last_name, positions.title AS title, managers.name AS manager FROM employees LEFT JOIN positions ON employees.position_id = positions.position_id LEFT JOIN managers ON employees.manager_id = managers.manager_id";
     db.query(sql, (err, res)=>{
         if(err) throw err;
         console.log('All employees:');
@@ -83,6 +96,7 @@ function updateEmployeePosition(){
  db.query(sql, (err, res)=>{
     if (err) throw err;
 
+    //const employees = res.map(({first_name, last_name, employee_id})=>({key: `${first_name} ${last_name}`, value: `${employee_id}`}));
     const employees = res.map(({first_name, last_name, employee_id})=>({key: `${first_name} ${last_name}`, value: `${employee_id}`}));
 
     inquirer.prompt([
@@ -98,7 +112,7 @@ function updateEmployeePosition(){
         const sql = "SELECT title, position_id FROM positions";
         db.query(sql, (err, res)=>{
             if (err) throw err;
-            const positions = res.map(({title, position_id})=>({key: title, value: position_id}));
+            const positions = res.map(({title, position_id})=>({key: title, value: position_id }));
 
             inquirer.prompt([
                 {
