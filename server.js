@@ -75,7 +75,6 @@ function viewAllPositions (){
     db.query(sql, (err, res) =>{
         if(err) throw err;
         console.log('All positions:');
-        console.log('All positions:');
         console.table(res);
          return promptMenu();
     });
