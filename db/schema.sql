@@ -26,5 +26,5 @@ CREATE TABLE employees (
 
 CREATE TABLE managers (
     manager_id INT PRIMARY KEY AUTO_INCREMENT,
-    manager_name VARCHAR(30) 
+    name VARCHAR(30) 
 );
